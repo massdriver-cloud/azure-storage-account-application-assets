@@ -1,0 +1,108 @@
+schema: draft-07
+name: "azure-storage-account-application-assets"
+description: "Azure Blob storage is optimized for storing massive amounts of unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally."
+ref: github.com/massdriver-cloud/azure-storage-account-application-assets
+access: "private"
+type: "bundle"
+
+params:
+  examples:
+    - __name: Development
+      redundancy:
+        replication_type: LRS
+        data_protection: true
+        data_protection_days: 7
+    - __name: Production
+      redundancy:
+        replication_type: RAGZRS
+        data_protection: true
+        data_protection_days: 365
+  required:
+    - storage
+    - redundancy
+  properties:
+    storage:
+      title: Storage
+      type: object
+      required:
+        - region
+      properties:
+        region:
+          title: Region
+          description: The region in which the storage account will be located (cannot be changed after deployment).
+          type: string
+          $md.immutable: true
+          oneOf:
+            - title: Central US
+              const: centralus
+            - title: East US
+              const: eastus
+            - title: East US 2
+              const: eastus2
+            - title: South Central US
+              const: southcentralus
+            - title: West US 2
+              const: westus2
+            - title: West US 3
+              const: westus3
+    redundancy:
+      title: Data Redundancy
+      type: object
+      required:
+        - replication_type
+      properties:
+        replication_type:
+          title: Data replication
+          description: Data replication strategy (cannot be changed after deployment).
+          type: string
+          $md.immutable: true
+          oneOf:
+            - title: Locally-redundant storage
+              const: LRS
+            - title: Zone-redundant storage
+              const: ZRS
+            - title: Geo-redundant storage
+              const: GRS
+            - title: Geo-zone-redundant storage
+              const: GZRS
+            - title: Geo-redundant storage (with read access)
+              const: RAGRS
+            - title: Geo-zone-redundant storage (with read access)
+              const: RAGZRS
+        data_protection:
+          title: Enable data protection
+          default: false
+          type: boolean
+        data_protection_days:
+          title: Data protection settings
+          description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
+          type: integer
+          minimum: 1
+          maximum: 365
+
+connections:
+  required:
+    - azure_service_principal
+  properties:
+    azure_service_principal:
+      $ref: massdriver/azure-service-principal
+
+artifacts:
+  required: []
+  properties: {}
+
+ui:
+  ui:order:
+    - storage
+    - redundancy
+    - "*"
+  storage:
+    ui:order:
+      - region
+      - "*"
+  redundancy:
+    ui:order:
+      - replication_type
+      - data_protection
+      - data_protection_days
+      - "*"
