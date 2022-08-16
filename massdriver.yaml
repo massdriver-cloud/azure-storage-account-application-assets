@@ -27,17 +27,8 @@ params:
         region:
           title: Region
           description: The region in which the storage account will be located (cannot be changed after deployment).
-          type: string
           $md.immutable: true
-          oneOf:
-          - title: East US
-            const: eastus
-          - title: West US
-            const: westus
-          - title: South Central US
-            const: southcentralus
-          - title: North Central US
-            const: northcentralus
+          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
     redundancy:
       title: Data Redundancy
       type: object
