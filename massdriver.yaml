@@ -9,12 +9,10 @@ params:
   examples:
     - __name: Development
       redundancy:
-        replication_type: LRS
         data_protection: true
         data_protection_days: 7
     - __name: Production
       redundancy:
-        replication_type: RAGZRS
         data_protection: true
         data_protection_days: 365
   properties:
