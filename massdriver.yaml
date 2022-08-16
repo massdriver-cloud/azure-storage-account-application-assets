@@ -22,7 +22,7 @@ params:
       title: Storage
       type: object
       required:
-      - region
+        - region
       properties:
         region:
           title: Region
@@ -44,8 +44,8 @@ params:
           properties:
             region:
               oneOf:
-              - const: eastus
-              - const: southcentralus
+                - const: eastus
+                - const: southcentralus
     then:
       properties:
         redundancy:
@@ -60,8 +60,8 @@ params:
           properties:
             region:
               oneOf:
-              - const: eastus
-              - const: southcentralus
+                - const: eastus
+                - const: southcentralus
         redundancy:
           properties:
             zone_redundancy:
