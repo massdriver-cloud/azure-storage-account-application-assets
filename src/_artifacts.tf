@@ -8,11 +8,11 @@ locals {
   }
   data_security = {
     iam = {
-      "blob-read" = {
+      "read" = {
         role  = "Storage Blob Data Reader"
         scope = azurerm_storage_account.main.id
       },
-      "blob-read-write" = {
+      "read/write" = {
         role  = "Storage Blob Data Contributor"
         scope = azurerm_storage_account.main.id
       }
