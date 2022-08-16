@@ -1,11 +1,5 @@
 locals {
   storage_account_name = join("", split("-", var.md_metadata.name_prefix))
-
-  storage = {
-    account_tier = "Standard"
-    account_kind = "StorageV2"
-    access_tier  = "Hot"
-  }
 }
 
 resource "azurerm_resource_group" "main" {
@@ -18,9 +12,9 @@ resource "azurerm_storage_account" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
 
-  account_tier             = local.storage.account_tier
-  account_kind             = local.storage.account_kind
-  access_tier              = local.storage.access_tier
+  account_tier             = "Standard"
+  account_kind             = "StorageV2"
+  access_tier              = "Hot"
   account_replication_type = var.redundancy.replication_type
 
   identity {
