@@ -9,17 +9,12 @@ params:
   examples:
     - __name: Development
       redundancy:
-        replication_type: LRS
         data_protection: true
         data_protection_days: 7
     - __name: Production
       redundancy:
-        replication_type: RAGZRS
         data_protection: true
         data_protection_days: 365
-  required:
-    - storage
-    - redundancy
   properties:
     storage:
       title: Storage
@@ -30,55 +25,95 @@ params:
         region:
           title: Region
           description: The region in which the storage account will be located (cannot be changed after deployment).
-          type: string
           $md.immutable: true
-          oneOf:
-            - title: Central US
-              const: centralus
-            - title: East US
-              const: eastus
-            - title: East US 2
-              const: eastus2
-            - title: South Central US
-              const: southcentralus
-            - title: West US 2
-              const: westus2
-            - title: West US 3
-              const: westus3
+          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
     redundancy:
       title: Data Redundancy
       type: object
-      required:
-        - replication_type
       properties:
-        replication_type:
-          title: Data replication
-          description: Data replication strategy (cannot be changed after deployment).
-          type: string
-          $md.immutable: true
-          oneOf:
-            - title: Locally-redundant storage
-              const: LRS
-            - title: Zone-redundant storage
-              const: ZRS
-            - title: Geo-redundant storage
-              const: GRS
-            - title: Geo-zone-redundant storage
-              const: GZRS
-            - title: Geo-redundant storage (with read access)
-              const: RAGRS
-            - title: Geo-zone-redundant storage (with read access)
-              const: RAGZRS
         data_protection:
           title: Enable data protection
           default: false
           type: boolean
-        data_protection_days:
-          title: Data protection settings
-          description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
-          type: integer
-          minimum: 1
-          maximum: 365
+  allOf:
+  - if:
+      properties:
+        storage:
+          properties:
+            region:
+              oneOf:
+                - const: eastus
+                - const: southcentralus
+    then:
+      properties:
+        redundancy:
+          properties:
+            zone_redundancy:
+              title: Enable zone redundancy
+              type: boolean
+              default: false
+  - if:
+      properties:
+        storage:
+          properties:
+            region:
+              oneOf:
+                - const: eastus
+                - const: southcentralus
+        redundancy:
+          properties:
+            zone_redundancy:
+              const: true
+    then:
+      properties:
+        redundancy:
+          properties:
+            replication_type:
+              title: Replication type
+              description: The type of replication to use for the storage account.
+              type: string
+              default: ZRS
+              oneOf:
+                - title: Zone-redundant storage
+                  const: ZRS
+                - title: Geo-zone-redundant storage
+                  const: GZRS
+                - title: Geo-zone-redundant storage (read-access)
+                  const: RAGZRS
+    else:
+      properties:
+        redundancy:
+          properties:
+            replication_type:
+              title: Replication type
+              description: The type of replication to use for the storage account.
+              type: string
+              default: LRS
+              oneOf:
+                - title: Local-redundant storage
+                  const: LRS
+                - title: Geo-redundant storage
+                  const: GRS
+                - title: Geo-redundant storage (read-access)
+                  const: RAGRS
+  - if:
+      properties:
+        redundancy:
+          properties:
+            data_protection:
+              const: true
+    then:
+      properties:
+        redundancy:
+          required:
+            - data_protection_days
+          properties:
+            data_protection_days:
+              title: Data protection settings
+              description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
+              type: integer
+              minimum: 1
+              maximum: 365
 
 connections:
   required:
@@ -88,8 +123,11 @@ connections:
       $ref: massdriver/azure-service-principal
 
 artifacts:
-  required: []
-  properties: {}
+  required:
+    - azure_storage_account
+  properties:
+    azure_storage_account:
+      $ref: massdriver/azure-storage-account
 
 ui:
   ui:order:
@@ -102,6 +140,7 @@ ui:
       - "*"
   redundancy:
     ui:order:
+      - zone_redundancy
       - replication_type
       - data_protection
       - data_protection_days
