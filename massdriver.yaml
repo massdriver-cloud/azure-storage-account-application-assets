@@ -107,6 +107,8 @@ params:
     then:
       properties:
         redundancy:
+          required:
+            - data_protection_days
           properties:
             data_protection_days:
               title: Data protection settings
