@@ -5,11 +5,9 @@ locals {
     window_size = "PT5M"
   }
   metric_config = {
-    operator_availability  = "LessThan"
-    operator_latency       = "GreaterThan"
-    aggregation            = "Average"
-    threshold_availability = 95
-    threshold_latency      = 150
+    operator_latency  = "GreaterThan"
+    aggregation       = "Average"
+    threshold_latency = 150
   }
 }
 
@@ -37,11 +35,11 @@ module "availability_metric_alert" {
   message      = "Low availability"
 
   alarm_name       = "${var.md_metadata.name_prefix}-lowAvailability"
-  operator         = local.metric_config.operator_availability
+  operator         = "LessThan"
   metric_name      = "Availability"
   metric_namespace = "Microsoft.Storage/storageAccounts"
   aggregation      = local.metric_config.aggregation
-  threshold        = local.metric_config.threshold_availability
+  threshold        = 95
 }
 
 module "success_e2e_latency_metric_alert" {
