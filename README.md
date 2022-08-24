@@ -47,8 +47,38 @@ Form input parameters for configuring a bundle for deployment.
 <summary>View</summary>
 
 <!-- PARAMS:START -->
+## Properties
 
-**Params coming soon**
+- **`redundancy`** *(object)*
+  - **`data_protection`** *(boolean)*: Default: `False`.
+- **`storage`** *(object)*
+  - **`region`** *(string)*: The region in which the storage account will be located (cannot be changed after deployment).
+    - **One of**
+      - East US
+      - North Central US
+      - South Central US
+      - West US
+## Examples
+
+  ```json
+  {
+      "__name": "Development",
+      "redundancy": {
+          "data_protection": true,
+          "data_protection_days": 7
+      }
+  }
+  ```
+
+  ```json
+  {
+      "__name": "Production",
+      "redundancy": {
+          "data_protection": true,
+          "data_protection_days": 365
+      }
+  }
+  ```
 
 <!-- PARAMS:END -->
 
@@ -62,9 +92,33 @@ Connections from other bundles that this bundle depends on.
 <summary>View</summary>
 
 <!-- CONNECTIONS:START -->
+## Properties
 
-**Connections coming soon**
+- **`azure_service_principal`** *(object)*: . Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`client_id`** *(string)*: A valid UUID field.
 
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+    - **`client_secret`** *(string)*
+    - **`subscription_id`** *(string)*: A valid UUID field.
+
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+    - **`tenant_id`** *(string)*: A valid UUID field.
+
+      Examples:
+      ```json
+      "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
+      ```
+
+  - **`specs`** *(object)*
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -77,9 +131,64 @@ Resources created by this bundle that can be connected to other bundles.
 <summary>View</summary>
 
 <!-- ARTIFACTS:START -->
+## Properties
 
-**Artifacts coming soon**
+- **`azure_storage_account`** *(object)*: . Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`authentication`** *(object)*
+      - **`connection_string`** *(string)*: Azure Storage Account Connection String authentication.
 
+        Examples:
+        ```json
+        "DefaultEndpointsProtocol=https;AccountName=localdevstorage0000;AccountKey=1234abcd=;EndpointSuffix=core.windows.net"
+        ```
+
+      - **`endpoint`** *(string)*: Azure Storage Account endpoint authentication. Cannot contain additional properties.
+
+        Examples:
+        ```json
+        "https://storageaccount.blob.core.windows.net/"
+        ```
+
+        ```json
+        "http://storageaccount.file.core.windows.net"
+        ```
+
+        ```json
+        "abfs://filesystem.accountname.dfs.core.windows.net/"
+        ```
+
+        ```json
+        "https://storageaccount.privatelink01.queue.core.windows.net/"
+        ```
+
+    - **`infrastructure`** *(object)*
+      - **`ari`** *(string)*: Azure Resource ID.
+
+        Examples:
+        ```json
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+        ```
+
+    - **`security`** *(object)*: Azure Security Configuration. Cannot contain additional properties.
+      - **`iam`** *(object)*: IAM Roles And Scopes. Cannot contain additional properties.
+        - **`^[a-z/-]+$`** *(object)*
+          - **`role`**: Azure Role.
+
+            Examples:
+            ```json
+            "Storage Blob Data Reader"
+            ```
+
+          - **`scope`** *(string)*: Azure IAM Scope.
+  - **`specs`** *(object)*
+    - **`azure`** *(object)*: .
+      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
+        - **One of**
+          - East US
+          - North Central US
+          - South Central US
+          - West US
 <!-- ARTIFACTS:END -->
 
 </details>
