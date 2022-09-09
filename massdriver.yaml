@@ -33,6 +33,8 @@ params:
     redundancy:
       title: Data Redundancy
       type: object
+      required:
+        - replication_type
       properties:
         replication_type:
           title: Replication type
