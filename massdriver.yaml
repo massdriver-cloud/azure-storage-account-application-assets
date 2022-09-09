@@ -117,6 +117,27 @@ params:
                               const: GRS
                             - title: Geo-redundant storage (read-access)
                               const: RAGRS
+        - properties:
+            storage:
+              properties:
+                region:
+                  enum:
+                    - westus
+                    - northcentralus
+            redundancy:
+              properties:
+                replication_type:
+                  title: Replication type
+                  description: The type of replication to use for the storage account.
+                  type: string
+                  oneOf:
+                    - title: Local-redundant storage
+                      const: LRS
+                    - title: Geo-redundant storage
+                      const: GRS
+                    - title: Geo-redundant storage (read-access)
+                      const: RAGRS
+
 
 
 connections:
