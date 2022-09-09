@@ -85,6 +85,7 @@ params:
                   title: Enable zone redundancy
                   description: Enable zone redundancy for the storage account
                   type: boolean
+                  $md.immutable: true
               dependencies:
                 zone_redundancy:
                   oneOf:
