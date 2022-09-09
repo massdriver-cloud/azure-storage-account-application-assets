@@ -30,73 +30,27 @@ params:
           description: The region in which the storage account will be located (cannot be changed after deployment).
           $md.immutable: true
           $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
-      dependencies:
-        region:
-          oneOf:
-            - properties:
-                region:
-                  enum:
-                    - eastus
-                    - southcentralus
-                zone_redundancy:
-                  title: Enable zone redundancy
-                  description: Enable zone redundancy for the storage account
-                  type: boolean
-            - properties:
-                region:
-                  enum:
-                    - westus
-                    - northcentralus
-                replication_type:
-                  title: Replication type
-                  description: The type of replication to use for the storage account.
-                  type: string
-                  default: LRS
-                  oneOf:
-                    - title: Local-redundant storage
-                      const: LRS
-                    - title: Geo-redundant storage
-                      const: GRS
-                    - title: Geo-redundant storage (read-access)
-                      const: RAGRS
-        zone_redundancy:
-          oneOf:
-            - properties:
-                zone_redundancy:
-                  enum:
-                    - true
-                replication_type:
-                  title: Replication type
-                  description: The type of replication to use for the storage account.
-                  type: string
-                  default: ZRS
-                  oneOf:
-                    - title: Zone-redundant storage
-                      const: ZRS
-                    - title: Geo-zone-redundant storage
-                      const: GZRS
-                    - title: Geo-zone-redundant storage (read-access)
-                      const: RAGZRS
-            - properties:
-                zone_redundancy:
-                  enum:
-                    - false
-                replication_type:
-                  title: Replication type
-                  description: The type of replication to use for the storage account.
-                  type: string
-                  default: LRS
-                  oneOf:
-                    - title: Local-redundant storage
-                      const: LRS
-                    - title: Geo-redundant storage
-                      const: GRS
-                    - title: Geo-redundant storage (read-access)
-                      const: RAGRS
     redundancy:
       title: Data Redundancy
       type: object
       properties:
+        replication_type:
+          title: Replication type
+          description: The type of replication to use for the storage account.
+          type: string
+          oneOf:
+            - title: Local-redundant storage
+              const: LRS
+            - title: Zone-redundant storage
+              const: ZRS
+            - title: Geo-redundant storage
+              const: GRS
+            - title: Geo-zone-redundant storage
+              const: GZRS
+            - title: Geo-redundant storage (read-access)
+              const: RAGRS
+            - title: Geo-zone-redundant storage (read-access)
+              const: RAGZRS
         data_protection:
           title: Enable data protection
           default: false
@@ -106,14 +60,63 @@ params:
           oneOf:
             - properties:
                 data_protection:
-                  enum:
-                    - true
+                  const: true
                 data_protection_days:
                   title: Data protection settings
                   description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
                   type: integer
                   minimum: 1
                   maximum: 365
+  dependencies:
+    storage:
+      oneOf:
+        - properties:
+            storage:
+              properties:
+                region:
+                  enum:
+                    - eastus
+                    - southcentralus
+            redundancy:
+              properties:
+                zone_redundancy:
+                  title: Enable zone redundancy
+                  description: Enable zone redundancy for the storage account
+                  type: boolean
+              dependencies:
+                zone_redundancy:
+                  oneOf:
+                    - properties:
+                        zone_redundancy:
+                          const: true
+                        replication_type:
+                          title: Replication type
+                          description: The type of replication to use for the storage account.
+                          type: string
+                          default: ZRS
+                          oneOf:
+                            - title: Zone-redundant storage
+                              const: ZRS
+                            - title: Geo-zone-redundant storage
+                              const: GZRS
+                            - title: Geo-zone-redundant storage (read-access)
+                              const: RAGZRS
+                    - properties:
+                        zone_redundancy:
+                          const: false
+                        replication_type:
+                          title: Replication type
+                          description: The type of replication to use for the storage account.
+                          type: string
+                          default: LRS
+                          oneOf:
+                            - title: Local-redundant storage
+                              const: LRS
+                            - title: Geo-redundant storage
+                              const: GRS
+                            - title: Geo-redundant storage (read-access)
+                              const: RAGRS
+
 
 connections:
   required:
