@@ -96,7 +96,6 @@ params:
                           title: Replication type
                           description: The type of replication to use for the storage account.
                           type: string
-                          default: ZRS
                           oneOf:
                             - title: Zone-redundant storage
                               const: ZRS
@@ -111,7 +110,6 @@ params:
                           title: Replication type
                           description: The type of replication to use for the storage account.
                           type: string
-                          default: LRS
                           oneOf:
                             - title: Local-redundant storage
                               const: LRS
