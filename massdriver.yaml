@@ -71,6 +71,10 @@ params:
                   maximum: 365
               required:
                 - data_protection_days
+            # Confirmed with Dave that this is the correct way to handle this dependency.
+            - properties:
+                data_protection:
+                  const: false
   dependencies:
     storage:
       oneOf:
@@ -78,6 +82,7 @@ params:
             storage:
               properties:
                 region:
+                # East US and South Central US support zone redundancy
                   enum:
                     - eastus
                     - southcentralus
@@ -87,8 +92,10 @@ params:
                   title: Enable zone redundancy
                   description: Enable zone redundancy for the storage account
                   type: boolean
+                  # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS. Users cannot swap between non-zone-redundant and zone-redundant replication types.
                   $md.immutable: true
               dependencies:
+              # Replication type is set above and set here because the JSON schema wouldn't work otherwise with just one or the other.
                 zone_redundancy:
                   oneOf:
                     - properties:
@@ -123,6 +130,7 @@ params:
             storage:
               properties:
                 region:
+                # West US and North Central US do not support zone redundancy.
                   enum:
                     - westus
                     - northcentralus
@@ -139,8 +147,6 @@ params:
                       const: GRS
                     - title: Geo-redundant storage (read-access)
                       const: RAGRS
-
-
 
 connections:
   required:

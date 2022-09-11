@@ -49,7 +49,7 @@ Form input parameters for configuring a bundle for deployment.
 <!-- PARAMS:START -->
 ## Properties
 
-- **`redundancy`** *(object)*
+- **`redundancy`** *(object)*: Cannot contain additional properties.
   - **`data_protection`** *(boolean)*: Default: `False`.
   - **`replication_type`** *(string)*: The type of replication to use for the storage account.
     - **One of**
@@ -59,7 +59,7 @@ Form input parameters for configuring a bundle for deployment.
       - Geo-zone-redundant storage
       - Geo-redundant storage (read-access)
       - Geo-zone-redundant storage (read-access)
-- **`storage`** *(object)*
+- **`storage`** *(object)*: Cannot contain additional properties.
   - **`region`** *(string)*: The region in which the storage account will be located (cannot be changed after deployment).
     - **One of**
       - East US
@@ -103,7 +103,7 @@ Connections from other bundles that this bundle depends on.
 ## Properties
 
 - **`azure_service_principal`** *(object)*: . Cannot contain additional properties.
-  - **`data`** *(object)*
+  - **`data`** *(object)*: Cannot contain additional properties.
     - **`client_id`** *(string)*: A valid UUID field.
 
       Examples:
@@ -126,7 +126,7 @@ Connections from other bundles that this bundle depends on.
       "123xyz99-ab34-56cd-e7f8-456abc1q2w3e"
       ```
 
-  - **`specs`** *(object)*
+  - **`specs`** *(object)*: Cannot contain additional properties.
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -142,8 +142,8 @@ Resources created by this bundle that can be connected to other bundles.
 ## Properties
 
 - **`azure_storage_account`** *(object)*: . Cannot contain additional properties.
-  - **`data`** *(object)*
-    - **`authentication`** *(object)*
+  - **`data`** *(object)*: Cannot contain additional properties.
+    - **`authentication`** *(object)*: Cannot contain additional properties.
       - **`connection_string`** *(string)*: Azure Storage Account Connection String authentication.
 
         Examples:
@@ -170,7 +170,7 @@ Resources created by this bundle that can be connected to other bundles.
         "https://storageaccount.privatelink01.queue.core.windows.net/"
         ```
 
-    - **`infrastructure`** *(object)*
+    - **`infrastructure`** *(object)*: Cannot contain additional properties.
       - **`ari`** *(string)*: Azure Resource ID.
 
         Examples:
@@ -180,7 +180,7 @@ Resources created by this bundle that can be connected to other bundles.
 
     - **`security`** *(object)*: Azure Security Configuration. Cannot contain additional properties.
       - **`iam`** *(object)*: IAM Roles And Scopes. Cannot contain additional properties.
-        - **`^[a-z/-]+$`** *(object)*
+        - **`^[a-z/-]+$`** *(object)*: Cannot contain additional properties.
           - **`role`**: Azure Role.
 
             Examples:
@@ -189,8 +189,8 @@ Resources created by this bundle that can be connected to other bundles.
             ```
 
           - **`scope`** *(string)*: Azure IAM Scope.
-  - **`specs`** *(object)*
-    - **`azure`** *(object)*: .
+  - **`specs`** *(object)*: Cannot contain additional properties.
+    - **`azure`** *(object)*: . Cannot contain additional properties.
       - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
         - **One of**
           - East US
