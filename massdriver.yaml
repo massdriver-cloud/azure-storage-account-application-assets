@@ -43,16 +43,10 @@ params:
           oneOf:
             - title: Local-redundant storage
               const: LRS
-            - title: Zone-redundant storage
-              const: ZRS
             - title: Geo-redundant storage
               const: GRS
-            - title: Geo-zone-redundant storage
-              const: GZRS
             - title: Geo-redundant storage (read-access)
               const: RAGRS
-            - title: Geo-zone-redundant storage (read-access)
-              const: RAGZRS
         data_protection:
           title: Enable data protection
           default: false
