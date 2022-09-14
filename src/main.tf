@@ -1,7 +1,6 @@
 locals {
-  max_length = 24
-  # Storage account names allow letters and numbers only, no special characters. Also limits to a max length or 24 characters.
-  storage_account_name = substr(join("", split("-", var.md_metadata.name_prefix)), 0, local.max_length)
+  max_length           = 24
+  storage_account_name = substr(replace(var.md_metadata.name_prefix, "/[^a-z0-9]/", ""), 0, local.max_length)
 }
 
 resource "azurerm_resource_group" "main" {
