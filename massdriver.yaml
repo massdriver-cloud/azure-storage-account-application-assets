@@ -15,6 +15,9 @@ params:
       redundancy:
         data_protection: true
         data_protection_days: 365
+  required:
+    - storage
+    - redundancy
   properties:
     storage:
       title: Storage
@@ -30,90 +33,120 @@ params:
     redundancy:
       title: Data Redundancy
       type: object
+      required:
+        - replication_type
       properties:
+        replication_type:
+          title: Replication type
+          description: The type of replication to use for the storage account.
+          type: string
+          oneOf:
+            - title: Local-redundant storage
+              const: LRS
+            - title: Zone-redundant storage
+              const: ZRS
+            - title: Geo-redundant storage
+              const: GRS
+            - title: Geo-zone-redundant storage
+              const: GZRS
+            - title: Geo-redundant storage (read-access)
+              const: RAGRS
+            - title: Geo-zone-redundant storage (read-access)
+              const: RAGZRS
         data_protection:
           title: Enable data protection
           default: false
           type: boolean
-  allOf:
-  - if:
-      properties:
-        storage:
-          properties:
-            region:
-              oneOf:
-                - const: eastus
-                - const: southcentralus
-    then:
-      properties:
-        redundancy:
-          properties:
-            zone_redundancy:
-              title: Enable zone redundancy
-              type: boolean
-              default: false
-  - if:
-      properties:
-        storage:
-          properties:
-            region:
-              oneOf:
-                - const: eastus
-                - const: southcentralus
-        redundancy:
-          properties:
-            zone_redundancy:
-              const: true
-    then:
-      properties:
-        redundancy:
-          properties:
-            replication_type:
-              title: Replication type
-              description: The type of replication to use for the storage account.
-              type: string
-              default: ZRS
-              oneOf:
-                - title: Zone-redundant storage
-                  const: ZRS
-                - title: Geo-zone-redundant storage
-                  const: GZRS
-                - title: Geo-zone-redundant storage (read-access)
-                  const: RAGZRS
-    else:
-      properties:
-        redundancy:
-          properties:
-            replication_type:
-              title: Replication type
-              description: The type of replication to use for the storage account.
-              type: string
-              default: LRS
-              oneOf:
-                - title: Local-redundant storage
-                  const: LRS
-                - title: Geo-redundant storage
-                  const: GRS
-                - title: Geo-redundant storage (read-access)
-                  const: RAGRS
-  - if:
-      properties:
-        redundancy:
-          properties:
-            data_protection:
-              const: true
-    then:
-      properties:
-        redundancy:
-          required:
-            - data_protection_days
-          properties:
-            data_protection_days:
-              title: Data protection settings
-              description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
-              type: integer
-              minimum: 1
-              maximum: 365
+      dependencies:
+        data_protection:
+          oneOf:
+            - properties:
+                data_protection:
+                  const: true
+                data_protection_days:
+                  title: Data protection settings
+                  description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+              required:
+                - data_protection_days
+            # Confirmed with Dave that this is the correct way to handle this dependency.
+            - properties:
+                data_protection:
+                  const: false
+  dependencies:
+    storage:
+      oneOf:
+        - properties:
+            storage:
+              properties:
+                region:
+                # East US and South Central US support zone redundancy
+                  enum:
+                    - eastus
+                    - southcentralus
+            redundancy:
+              properties:
+                zone_redundancy:
+                  title: Enable zone redundancy
+                  description: Enable zone redundancy for the storage account
+                  type: boolean
+                  # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS. Users cannot swap between non-zone-redundant and zone-redundant replication types.
+                  $md.immutable: true
+              dependencies:
+              # Replication type is set above and set here because the JSON schema wouldn't work otherwise with just one or the other.
+                zone_redundancy:
+                  oneOf:
+                    - properties:
+                        zone_redundancy:
+                          const: true
+                        replication_type:
+                          title: Replication type
+                          description: The type of replication to use for the storage account.
+                          type: string
+                          oneOf:
+                            - title: Zone-redundant storage
+                              const: ZRS
+                            - title: Geo-zone-redundant storage
+                              const: GZRS
+                            - title: Geo-zone-redundant storage (read-access)
+                              const: RAGZRS
+                    - properties:
+                        zone_redundancy:
+                          const: false
+                        replication_type:
+                          title: Replication type
+                          description: The type of replication to use for the storage account.
+                          type: string
+                          oneOf:
+                            - title: Local-redundant storage
+                              const: LRS
+                            - title: Geo-redundant storage
+                              const: GRS
+                            - title: Geo-redundant storage (read-access)
+                              const: RAGRS
+        - properties:
+            storage:
+              properties:
+                region:
+                # West US and North Central US do not support zone redundancy.
+                  enum:
+                    - westus
+                    - northcentralus
+            redundancy:
+              properties:
+                replication_type:
+                  title: Replication type
+                  description: The type of replication to use for the storage account.
+                  type: string
+                  oneOf:
+                    - title: Local-redundant storage
+                      const: LRS
+                    - title: Geo-redundant storage
+                      const: GRS
+                    - title: Geo-redundant storage (read-access)
+                      const: RAGRS
 
 connections:
   required:
