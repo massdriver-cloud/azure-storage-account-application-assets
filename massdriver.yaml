@@ -125,9 +125,7 @@ params:
               properties:
                 region:
                 # West US and North Central US do not support zone redundancy.
-                  type: [string, "null"]
                   enum:
-                    - null
                     - westus
                     - northcentralus
             redundancy:
