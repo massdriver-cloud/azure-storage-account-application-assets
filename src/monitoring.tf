@@ -7,7 +7,7 @@ locals {
   metric_config = {
     operator_latency  = "GreaterThan"
     aggregation       = "Average"
-    threshold_latency = 150
+    threshold_latency = 500
   }
 }
 
