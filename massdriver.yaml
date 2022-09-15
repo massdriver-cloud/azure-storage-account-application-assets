@@ -132,37 +132,6 @@ params:
                       const: GRS
                     - title: Geo-redundant storage (read-access)
                       const: RAGRS
-  allOf:
-    - if:
-        properties:
-          redundancy:
-            properties:
-              zone_redundancy:
-                const: true
-      then:
-        properties:
-          redundancy:
-            properties:
-              replication_type:
-                oneOf:
-                  - title: Zone-redundant storage
-                    const: ZRS
-                  - title: Geo-zone-redundant storage
-                    const: GZRS
-                  - title: Geo-zone-redundant storage (read-access)
-                    const: RAGZRS
-      else:
-        properties:
-          redundancy:
-            properties:
-              replication_type:
-                oneOf:
-                  - title: Local-redundant storage
-                    const: LRS
-                  - title: Geo-redundant storage
-                    const: GRS
-                  - title: Geo-redundant storage (read-access)
-                    const: RAGRS
 
 connections:
   required:
