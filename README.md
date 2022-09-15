@@ -54,8 +54,11 @@ Form input parameters for configuring a bundle for deployment.
   - **`replication_type`** *(string)*: The type of replication to use for the storage account.
     - **One of**
       - Local-redundant storage
+      - Zone-redundant storage
       - Geo-redundant storage
+      - Geo-zone-redundant Storage
       - Geo-redundant storage (read-access)
+      - Geo-zone-redundant storage (read-access)
 - **`storage`** *(object)*
   - **`region`** *(string)*: The region in which the storage account will be located (cannot be changed after deployment).
     - **One of**
