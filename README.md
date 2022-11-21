@@ -56,23 +56,15 @@ Form input parameters for configuring a bundle for deployment.
 <!-- PARAMS:START -->
 ## Properties
 
+- **`monitoring`** *(object)*
+  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
+    - **One of**
+      - Automated
+      - Custom
+      - Disabled
 - **`redundancy`** *(object)*
   - **`data_protection`** *(boolean)*: Default: `False`.
-  - **`replication_type`** *(string)*: The type of replication to use for the storage account.
-    - **One of**
-      - Local-redundant storage
-      - Zone-redundant storage
-      - Geo-redundant storage
-      - Geo-zone-redundant Storage
-      - Geo-redundant storage (read-access)
-      - Geo-zone-redundant storage (read-access)
-- **`storage`** *(object)*
-  - **`region`** *(string)*: The region in which the storage account will be located (cannot be changed after deployment).
-    - **One of**
-      - East US
-      - North Central US
-      - South Central US
-      - West US
+  - **`zone_redundancy`** *(boolean)*: Enable zone redundancy for the storage account. Default: `False`.
 ## Examples
 
   ```json
@@ -134,6 +126,42 @@ Connections from other bundles that this bundle depends on.
       ```
 
   - **`specs`** *(object)*
+- **`azure_virtual_network`** *(object)*: . Cannot contain additional properties.
+  - **`data`** *(object)*
+    - **`infrastructure`** *(object)*
+      - **`cidr`** *(string)*
+
+        Examples:
+        ```json
+        "10.100.0.0/16"
+        ```
+
+        ```json
+        "192.24.12.0/22"
+        ```
+
+      - **`default_subnet_id`** *(string)*: Azure Resource ID.
+
+        Examples:
+        ```json
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+        ```
+
+      - **`id`** *(string)*: Azure Resource ID.
+
+        Examples:
+        ```json
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
+        ```
+
+  - **`specs`** *(object)*
+    - **`azure`** *(object)*: .
+      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
+        - **One of**
+          - East US
+          - North Central US
+          - South Central US
+          - West US
 <!-- CONNECTIONS:END -->
 
 </details>
