@@ -333,7 +333,7 @@ ui:
         - success_e2e_latency_metric_alert
         - success_server_latency_metric_alert
         - '*'
-      availability_metric_alert:
+      availability_metric_alert: &monitor_alarm_metric_ui
         ui:order:
           - severity
           - operator
@@ -343,20 +343,6 @@ ui:
           - threshold
           - '*'
       success_e2e_latency_metric_alert:
-        ui:order:
-          - severity
-          - operator
-          - aggregation
-          - frequency
-          - window_size
-          - threshold
-          - '*'
+        <<: *monitor_alarm_metric_ui
       success_server_latency_metric_alert:
-        ui:order:
-          - severity
-          - operator
-          - aggregation
-          - frequency
-          - window_size
-          - threshold
-          - '*'
+        <<: *monitor_alarm_metric_ui
