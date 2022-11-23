@@ -1,14 +1,36 @@
 locals {
-  scope_config = {
-    severity    = "1"
-    frequency   = "PT1M"
-    window_size = "PT5M"
+  automated_alarms = {
+    availability_metric_alert = {
+      severity    = "1"
+      frequency   = "PT1M"
+      window_size = "PT5M"
+      operator    = "GreaterThan"
+      aggregation = "Average"
+      threshold   = 90
+    }
+    success_e2e_latency_metric_alert = {
+      severity    = "1"
+      frequency   = "PT1M"
+      window_size = "PT5M"
+      operator    = "GreaterThan"
+      aggregation = "Average"
+      threshold   = 500
+    }
+    success_server_latency_metric_alert = {
+      severity    = "1"
+      frequency   = "PT1M"
+      window_size = "PT5M"
+      operator    = "GreaterThan"
+      aggregation = "Average"
+      threshold   = 500
+    }
   }
-  metric_config = {
-    operator_latency  = "GreaterThan"
-    aggregation       = "Average"
-    threshold_latency = 250
+  alarms_map = {
+    "AUTOMATED" = local.automated_alarms
+    "DISABLED"  = {}
+    "CUSTOM"    = lookup(var.monitoring, "alarms", {})
   }
+  alarms = lookup(local.alarms_map, var.monitoring.mode, {})
 }
 
 module "alarm_channel" {
@@ -22,9 +44,9 @@ module "availability_metric_alert" {
   scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
-  severity                = local.scope_config.severity
-  frequency               = local.scope_config.frequency
-  window_size             = local.scope_config.window_size
+  severity                = local.alarms.availability_metric_alert.severity
+  frequency               = local.alarms.availability_metric_alert.frequency
+  window_size             = local.alarms.availability_metric_alert.window_size
 
   depends_on = [
     azurerm_storage_account.main
@@ -35,11 +57,11 @@ module "availability_metric_alert" {
   message      = "Low availability"
 
   alarm_name       = "${var.md_metadata.name_prefix}-lowAvailability"
-  operator         = "LessThan"
+  operator         = local.alarms.availability_metric_alert.operator
   metric_name      = "Availability"
   metric_namespace = "Microsoft.Storage/storageAccounts"
-  aggregation      = local.metric_config.aggregation
-  threshold        = 95
+  aggregation      = local.alarms.availability_metric_alert.aggregation
+  threshold        = local.alarms.availability_metric_alert.threshold
 }
 
 module "success_e2e_latency_metric_alert" {
@@ -47,9 +69,9 @@ module "success_e2e_latency_metric_alert" {
   scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
-  severity                = local.scope_config.severity
-  frequency               = local.scope_config.frequency
-  window_size             = local.scope_config.window_size
+  severity                = local.alarms.success_e2e_latency_metric_alert.severity
+  frequency               = local.alarms.success_e2e_latency_metric_alert.frequency
+  window_size             = local.alarms.success_e2e_latency_metric_alert.window_size
 
   depends_on = [
     azurerm_storage_account.main
@@ -60,11 +82,11 @@ module "success_e2e_latency_metric_alert" {
   message      = "High E2E Success Latency"
 
   alarm_name       = "${var.md_metadata.name_prefix}-highE2ESuccessLatency"
-  operator         = local.metric_config.operator_latency
+  operator         = local.alarms.success_e2e_latency_metric_alert.operator
   metric_name      = "SuccessE2ELatency"
   metric_namespace = "Microsoft.Storage/storageAccounts"
-  aggregation      = local.metric_config.aggregation
-  threshold        = local.metric_config.threshold_latency
+  aggregation      = local.alarms.success_e2e_latency_metric_alert.aggregation
+  threshold        = local.alarms.success_e2e_latency_metric_alert.threshold
 }
 
 module "success_server_latency_metric_alert" {
@@ -72,9 +94,9 @@ module "success_server_latency_metric_alert" {
   scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
-  severity                = local.scope_config.severity
-  frequency               = local.scope_config.frequency
-  window_size             = local.scope_config.window_size
+  severity                = local.alarms.success_server_latency_metric_alert.severity
+  frequency               = local.alarms.success_server_latency_metric_alert.frequency
+  window_size             = local.alarms.success_server_latency_metric_alert.window_size
 
   depends_on = [
     azurerm_storage_account.main
@@ -85,9 +107,9 @@ module "success_server_latency_metric_alert" {
   message      = "High Success Server Latency"
 
   alarm_name       = "${var.md_metadata.name_prefix}-highSuccessServerLatency"
-  operator         = local.metric_config.operator_latency
+  operator         = local.alarms.success_server_latency_metric_alert.operator
   metric_name      = "SuccessServerLatency"
   metric_namespace = "Microsoft.Storage/storageAccounts"
-  aggregation      = local.metric_config.aggregation
-  threshold        = local.metric_config.threshold_latency
+  aggregation      = local.alarms.success_server_latency_metric_alert.aggregation
+  threshold        = local.alarms.success_server_latency_metric_alert.threshold
 }
