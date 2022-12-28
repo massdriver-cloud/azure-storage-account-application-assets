@@ -1,5 +1,59 @@
-# Operator Guide
+# azure-storage-account-application-assets
+An Azure storage account contains all of your Azure Storage data objects, including blobs, file shares, queues, tables, and disks. The storage account provides a unique namespace for your Azure Storage data that's accessible from anywhere in the world over HTTP or HTTPS. Data in your storage account is durable and highly available, secure, and massively scalable.
 
-This is the guide for your bundle. It will appear under the `guide` button in Massdriver.
+## Use Cases 
+Users or client applications can access objects in Blob Storage via HTTP/HTTPS, from anywhere in the world. Objects in Blob Storage are accessible via the Azure Storage REST API, Azure PowerShell, Azure CLI, or an Azure Storage client library. Client libraries are available for different languages, including:
+* .NET
+* Java
+* Node.js
+* Python
+* Go
+* PHP
+* Ruby
+### Cloud applications
+Web, mobile, gaming, and IoT application that handle massive amounts of data, reads, and writes at a global scale with near-real response times for various data will benefit from Azure Cosmos DB. Azure Cosmos DB's guaranteed high availability, high throughput, low latency, and tunable consistency are huge advantages when building these types of applications.
+### 99.999% SLA
+Guarantee business continuity, 99.999% availability, and enterprise-level security for every application.
+### Multiple languages with SDKs
+Build apps on API for NoSQL using the languages of your choice with SDKs for .NET, Java, Node.js and Python. Or your choice of drivers for any of the other database APIs.
 
-Use it to describe to users how the bundle works, use cases for the bundle, and examples.
+## Configuration Presets 
+### Development
+The development preset uses the serverless feature of Azure Cosmos DB. Azure Cosmos DB serverless best fits scenarios where you expect intermittent and unpredictable traffic with long idle times. Because provisioning capacity in such situations isn't required and may be cost-prohibitive, Azure Cosmos DB serverless is recommended for developing, jtesting, prototyping, and running in production new apps where the traffic pattern is unknown.
+### Production
+The production preset uses the provisioned feature of Azure Cosmos DB. When you use provisioned throughput, you set the throughput, measured in request units per second (RU/s) required for your workload. The service provisions the capacity needed to support the throughput requirements. Database operations against the service, such as reads, writes, and queries consume some amount of request units (RUs).
+
+## Features
+### Auto CIDR
+The Masssdriver Auto CIDR feature takes the burden of selecting a CIDR range away from you by determining the next available CIDR range and automatically provisions it. You still have the option to manually set your CIDR range if you prefer.
+
+## Design 
+Our bundle includes the following design choices to help simplify your deployment:
+### Redundancy
+Azure Storage always stores multiple copies of your data so that it's protected from planned and unplanned events, including transient hardware failures, network or power outages, and massive natural disasters. Redundancy ensures that your storage account meets its availability and durability targets even in the face of failures.
+* Locally redundant storage (LRS) copies your data synchronously three times within a single physical location in the primary region. LRS is the least expensive replication option, but isn't recommended for applications requiring high availability or durability.
+* Zone-redundant storage (ZRS) copies your data synchronously across three Azure availability zones in the primary region. For applications requiring high availability, Microsoft recommends using ZRS in the primary region, and also replicating to a secondary region.
+### Virtual network integration
+We also automatically provision networking resources to make your flexible server available to other resources in your Azure virtual network. The flexible server is given its own exclusive subnet, and your virtual network is given a private DNS zone for your workloads to use.
+
+## Best Practices
+The bundle includes a number of best practices without needing any additional work on your part.
+### Dedicated virtual subnet
+We automatically provision a dedicated virtual network subnet with its own private DNS zone for VNet integration.
+### Automated backups
+Azure Cosmos DB automatically takes backups of your data at regular intervals. The automatic backups are taken without affecting the performance or availability of the database operations. All the backups are stored separately in a storage service.
+
+## Security 
+In order to improve security, we implement a few key safeguards. 
+### Private subnet deployment
+The flexible server will be accessible only from within the private VNet and any peered networks.
+### Data encrypted in transit
+By default, all data in transit will be encrypted with Secure Sockets Layer and Transport Layer Security (SSL/TLS).
+### Data encrypted at rest
+Azure Storage uses service-side encryption (SSE) to automatically encrypt your data when it is persisted to the cloud. Azure Storage encryption protects your data and to help you to meet your organizational security and compliance commitments.
+
+## Observability 
+Massdriver provides you with visibility into the health of your systems. By default, storage accounts will be created with alarms connected to Massdriver to alert you when performance drops below a key threshold or fails completely. You will be notified when the availability, end-to-end latency, or server latency reaches certain thresholds.
+
+## Trade-offs 
+* CMKs are not currently supported
