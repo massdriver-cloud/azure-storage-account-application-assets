@@ -19,13 +19,9 @@ Build apps on API for NoSQL using the languages of your choice with SDKs for .NE
 
 ## Configuration Presets 
 ### Development
-The development preset uses the serverless feature of Azure Cosmos DB. Azure Cosmos DB serverless best fits scenarios where you expect intermittent and unpredictable traffic with long idle times. Because provisioning capacity in such situations isn't required and may be cost-prohibitive, Azure Cosmos DB serverless is recommended for developing, jtesting, prototyping, and running in production new apps where the traffic pattern is unknown.
+The development preset enables data protection for 7 days.
 ### Production
-The production preset uses the provisioned feature of Azure Cosmos DB. When you use provisioned throughput, you set the throughput, measured in request units per second (RU/s) required for your workload. The service provisions the capacity needed to support the throughput requirements. Database operations against the service, such as reads, writes, and queries consume some amount of request units (RUs).
-
-## Features
-### Auto CIDR
-The Masssdriver Auto CIDR feature takes the burden of selecting a CIDR range away from you by determining the next available CIDR range and automatically provisions it. You still have the option to manually set your CIDR range if you prefer.
+The production preset enables data protection for 365 days.
 
 ## Design 
 Our bundle includes the following design choices to help simplify your deployment:
@@ -34,19 +30,19 @@ Azure Storage always stores multiple copies of your data so that it's protected 
 * Locally redundant storage (LRS) copies your data synchronously three times within a single physical location in the primary region. LRS is the least expensive replication option, but isn't recommended for applications requiring high availability or durability.
 * Zone-redundant storage (ZRS) copies your data synchronously across three Azure availability zones in the primary region. For applications requiring high availability, Microsoft recommends using ZRS in the primary region, and also replicating to a secondary region.
 ### Virtual network integration
-We also automatically provision networking resources to make your flexible server available to other resources in your Azure virtual network. The flexible server is given its own exclusive subnet, and your virtual network is given a private DNS zone for your workloads to use.
+A private endpoint is created and connected to your VNet so other resources within the VNet can read/write to the storage account.
 
 ## Best Practices
 The bundle includes a number of best practices without needing any additional work on your part.
-### Dedicated virtual subnet
-We automatically provision a dedicated virtual network subnet with its own private DNS zone for VNet integration.
-### Automated backups
-Azure Cosmos DB automatically takes backups of your data at regular intervals. The automatic backups are taken without affecting the performance or availability of the database operations. All the backups are stored separately in a storage service.
+### TLS 1.2
+Enforcement of TLS 1.2 on public HTTPS endpoints is standard best practice.
+### Data retention policy
+A time-based retention policy stores blob data in a Write-Once, Read-Many (WORM) format for a specified interval. When a time-based retention policy is set, clients can create and read blobs, but can't modify or delete them. After the retention interval has expired, blobs can be deleted but not overwritten.
 
 ## Security 
 In order to improve security, we implement a few key safeguards. 
-### Private subnet deployment
-The flexible server will be accessible only from within the private VNet and any peered networks.
+### Private endpoints
+Public network access is disabled for this storage account. For network connectivity, we rely on private endpoints to allow clients on a Vnet securely access data within the storage account over a private link.
 ### Data encrypted in transit
 By default, all data in transit will be encrypted with Secure Sockets Layer and Transport Layer Security (SSL/TLS).
 ### Data encrypted at rest
