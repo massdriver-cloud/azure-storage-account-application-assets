@@ -3,7 +3,7 @@ name: "azure-storage-account-application-assets"
 description: "Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally."
 source_url: github.com/massdriver-cloud/azure-storage-account-application-assets
 access: "private"
-type: "bundle"
+type: "infrastructure"
 
 MonitorAlarmMetric: &monitor_alarm_metric
   required:
@@ -214,10 +214,6 @@ params:
                   type: object
                   title: Alarms
                   properties:
-                    availability_metric_alert:
-                      title: Availability
-                      type: object
-                      <<: *monitor_alarm_metric
                     success_e2e_latency_metric_alert:
                       title: End-to-end latency
                       type: object
@@ -226,71 +222,6 @@ params:
                       title: Server latency
                       type: object
                       <<: *monitor_alarm_metric
-  # Disabled to allow for virtual network connection
-  # When artifacts can be passed down into schema dependencies, this can be re-enabled.
-  # dependencies:
-  #   storage:
-  #     oneOf:
-  #       - properties:
-  #           storage:
-  #             properties:
-  #               region:
-  #               # East US and South Central US support zone redundancy
-  #                 enum:
-  #                   - eastus
-  #                   - southcentralus
-  #           redundancy:
-  #             properties:
-  #               zone_redundancy:
-  #                 title: Enable zone redundancy
-  #                 description: Enable zone redundancy for the storage account
-  #                 type: boolean
-  #                 # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS. Users cannot swap between non-zone-redundant and zone-redundant replication types.
-  #                 $md.immutable: true
-  #             dependencies:
-  #             # Replication type is set above and set here because the JSON schema wouldn't work otherwise with just one or the other.
-  #               zone_redundancy:
-  #                 oneOf:
-  #                   - properties:
-  #                       zone_redundancy:
-  #                         const: true
-  #                       replication_type:
-  #                         oneOf:
-  #                           - title: Zone-redundant storage
-  #                             const: ZRS
-  #                           - title: Geo-zone-redundant storage
-  #                             const: GZRS
-  #                           - title: Geo-zone-redundant storage (read-access)
-  #                             const: RAGZRS
-  #                   - properties:
-  #                       zone_redundancy:
-  #                         const: false
-  #                       replication_type:
-  #                         oneOf:
-  #                           - title: Local-redundant storage
-  #                             const: LRS
-  #                           - title: Geo-redundant storage
-  #                             const: GRS
-  #                           - title: Geo-redundant storage (read-access)
-  #                             const: RAGRS
-  #       - properties:
-  #           storage:
-  #             properties:
-  #               region:
-  #               # West US and North Central US do not support zone redundancy.
-  #                 enum:
-  #                   - westus
-  #                   - northcentralus
-  #           redundancy:
-  #             properties:
-  #               replication_type:
-  #                 oneOf:
-  #                   - title: Local-redundant storage
-  #                     const: LRS
-  #                   - title: Geo-redundant storage
-  #                     const: GRS
-  #                   - title: Geo-redundant storage (read-access)
-  #                     const: RAGRS
 
 connections:
   required:
@@ -308,7 +239,6 @@ artifacts:
   properties:
     azure_storage_account:
       $ref: massdriver/azure-storage-account
-
 
 ui:
   ui:order:
@@ -329,11 +259,10 @@ ui:
       - '*'
     alarms:
       ui:order:
-        - availability_metric_alert
         - success_e2e_latency_metric_alert
         - success_server_latency_metric_alert
         - '*'
-      availability_metric_alert: &monitor_alarm_metric_ui
+      success_e2e_latency_metric_alert: &monitor_alarm_metric_ui
         ui:order:
           - severity
           - operator
@@ -342,7 +271,5 @@ ui:
           - window_size
           - threshold
           - '*'
-      success_e2e_latency_metric_alert:
-        <<: *monitor_alarm_metric_ui
       success_server_latency_metric_alert:
         <<: *monitor_alarm_metric_ui
