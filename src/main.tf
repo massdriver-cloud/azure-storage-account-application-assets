@@ -18,6 +18,9 @@ resource "azurerm_storage_account" "main" {
   access_tier                       = "Hot"
   account_replication_type          = var.redundancy.data_protection ? var.redundancy.replication_type : "LRS"
   min_tls_version                   = "TLS1_2"
+  # this can be changed without forcing a recreate
+  # and can potentially be changed later when
+  # we try to push this into a completely private network
   public_network_access_enabled     = true
   infrastructure_encryption_enabled = true
   tags                              = var.md_metadata.default_tags
