@@ -16,21 +16,14 @@ resource "azurerm_storage_account" "main" {
   account_tier                      = "Standard"
   account_kind                      = "StorageV2"
   access_tier                       = "Hot"
-  account_replication_type          = var.redundancy.replication_type
+  account_replication_type          = var.redundancy.data_protection ? var.redundancy.replication_type : "LRS"
   min_tls_version                   = "TLS1_2"
-  public_network_access_enabled     = false
+  # this can be changed without forcing a recreate
+  # and can potentially be changed later when
+  # we try to push this into a completely private network
+  public_network_access_enabled     = true
   infrastructure_encryption_enabled = true
   tags                              = var.md_metadata.default_tags
-
-  network_rules {
-    default_action             = "Deny"
-    bypass                     = ["AzureServices", "Logging", "Metrics"]
-    virtual_network_subnet_ids = [var.azure_virtual_network.data.infrastructure.default_subnet_id]
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
 
   blob_properties {
     dynamic "delete_retention_policy" {
@@ -45,19 +38,5 @@ resource "azurerm_storage_account" "main" {
         days = var.redundancy.data_protection_days
       }
     }
-  }
-}
-
-resource "azurerm_private_endpoint" "main" {
-  name                = var.md_metadata.name_prefix
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-  subnet_id           = var.azure_virtual_network.data.infrastructure.default_subnet_id
-
-  private_service_connection {
-    name                           = "storage"
-    is_manual_connection           = false
-    private_connection_resource_id = azurerm_storage_account.main.id
-    subresource_names              = ["blob"]
   }
 }
