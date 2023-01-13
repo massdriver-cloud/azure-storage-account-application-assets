@@ -57,10 +57,8 @@ Form input parameters for configuring a bundle for deployment.
 ## Properties
 
 - **`monitoring`** *(object)*
-  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
+  - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `DISABLED`.
     - **One of**
-      - Automated
-      - Custom
       - Disabled
 - **`redundancy`** *(object)*
   - **`data_protection`** *(boolean)*: Default: `False`.
