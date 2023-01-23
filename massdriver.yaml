@@ -126,7 +126,7 @@ params:
       properties:
         replication_type:
           title: Replication type
-          description: "The type of replication to use for the storage account. **West US and North Central US do not support zone-redundant storage**."
+          description: "The type of replication to use for the storage account. Zone-redundancy is not supported in every region. This cannot be changed after deployment."
           type: string
            # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS. Users cannot swap between non-zone-redundant and zone-redundant replication types.
            # However, it's far easier to build and read as a single list. IMO optimizing for the case of changing replication_type is not worth it here.
