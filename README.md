@@ -64,7 +64,14 @@ Form input parameters for configuring a bundle for deployment.
       - Disabled
 - **`redundancy`** *(object)*
   - **`data_protection`** *(boolean)*: Default: `False`.
-  - **`zone_redundancy`** *(boolean)*: Enable zone redundancy for the storage account. Default: `False`.
+  - **`replication_type`** *(string)*: The type of replication to use for the storage account. **West US and North Central US do not support zone-redundant storage**.
+    - **One of**
+      - Local-redundant storage
+      - Geo-redundant storage
+      - Geo-redundant storage (read-access)
+      - Zone-redundant storage
+      - Geo-zone-redundant Storage
+      - Geo-zone-redundant storage (read-access)
 ## Examples
 
   ```json
