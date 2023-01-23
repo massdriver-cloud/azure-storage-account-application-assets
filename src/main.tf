@@ -1,6 +1,9 @@
 locals {
   max_length           = 24
   storage_account_name = substr(replace(var.md_metadata.name_prefix, "/[^a-z0-9]/", ""), 0, local.max_length)
+  # It's required, and I think this one is the most "basic" / lowest tier
+  # https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/storage_account#account_replication_type
+  default_accout_replication_type = "LRS"
 }
 
 resource "azurerm_resource_group" "main" {
@@ -16,7 +19,7 @@ resource "azurerm_storage_account" "main" {
   account_tier             = "Standard"
   account_kind             = "StorageV2"
   access_tier              = "Hot"
-  account_replication_type = var.redundancy.data_protection ? var.redundancy.replication_type : "LRS"
+  account_replication_type = var.redundancy.data_protection ? var.redundancy.replication_type : local.default_accout_replication_type
   min_tls_version          = "TLS1_2"
   # this can be changed without forcing a recreate
   # and can potentially be changed later when
