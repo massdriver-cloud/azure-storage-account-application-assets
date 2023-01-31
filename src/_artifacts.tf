@@ -12,7 +12,7 @@ locals {
         role  = "Storage Blob Data Reader"
         scope = azurerm_storage_account.main.id
       },
-      "read/write" = {
+      "read_write" = {
         role  = "Storage Blob Data Contributor"
         scope = azurerm_storage_account.main.id
       }
