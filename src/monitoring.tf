@@ -1,20 +1,28 @@
 locals {
   automated_alarms = {
+    availability_metric_alert = {
+      severity    = "1"
+      frequency   = "PT5M"
+      window_size = "PT5M"
+      operator    = "LessThan"
+      aggregation = "Average"
+      threshold   = 90
+    }
     success_e2e_latency_metric_alert = {
       severity    = "1"
-      frequency   = "PT1M"
+      frequency   = "PT5M"
       window_size = "PT5M"
       operator    = "GreaterThan"
       aggregation = "Average"
-      threshold   = 500
+      threshold   = 1000
     }
     success_server_latency_metric_alert = {
       severity    = "1"
-      frequency   = "PT1M"
+      frequency   = "PT5M"
       window_size = "PT5M"
       operator    = "GreaterThan"
       aggregation = "Average"
-      threshold   = 500
+      threshold   = 1000
     }
   }
   alarms_map = {
@@ -27,15 +35,41 @@ locals {
 }
 
 module "alarm_channel" {
-  source              = "github.com/massdriver-cloud/terraform-modules//azure-alarm-channel?ref=40d6e54"
+  source              = "github.com/massdriver-cloud/terraform-modules//azure/alarm-channel?ref=b4b3190"
   md_metadata         = var.md_metadata
   resource_group_name = azurerm_resource_group.main.name
 }
 
+module "availability_metric_alert" {
+  count                   = local.monitoring_enabled
+  source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
+  scopes                  = [module.azure_storage_account.account_id]
+  resource_group_name     = azurerm_resource_group.main.name
+  monitor_action_group_id = module.alarm_channel.id
+  severity                = local.alarms.availability_metric_alert.severity
+  frequency               = local.alarms.availability_metric_alert.frequency
+  window_size             = local.alarms.availability_metric_alert.window_size
+
+  depends_on = [
+    module.azure_storage_account
+  ]
+
+  md_metadata  = var.md_metadata
+  display_name = "Availability"
+  message      = "Low availability"
+
+  alarm_name       = "${var.md_metadata.name_prefix}-lowAvailability"
+  operator         = local.alarms.availability_metric_alert.operator
+  metric_name      = "Availability"
+  metric_namespace = "Microsoft.Storage/storageAccounts"
+  aggregation      = local.alarms.availability_metric_alert.aggregation
+  threshold        = local.alarms.availability_metric_alert.threshold
+}
+
 module "success_e2e_latency_metric_alert" {
   count                   = local.monitoring_enabled
-  source                  = "github.com/massdriver-cloud/terraform-modules//azure-monitor-metrics-alarm?ref=40d6e54"
-  scopes                  = [azurerm_storage_account.main.id]
+  source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
+  scopes                  = [module.azure_storage_account.account_id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
   severity                = local.alarms.success_e2e_latency_metric_alert.severity
@@ -43,7 +77,7 @@ module "success_e2e_latency_metric_alert" {
   window_size             = local.alarms.success_e2e_latency_metric_alert.window_size
 
   depends_on = [
-    azurerm_storage_account.main
+    module.azure_storage_account
   ]
 
   md_metadata  = var.md_metadata
@@ -60,8 +94,8 @@ module "success_e2e_latency_metric_alert" {
 
 module "success_server_latency_metric_alert" {
   count                   = local.monitoring_enabled
-  source                  = "github.com/massdriver-cloud/terraform-modules//azure-monitor-metrics-alarm?ref=40d6e54"
-  scopes                  = [azurerm_storage_account.main.id]
+  source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
+  scopes                  = [module.azure_storage_account.account_id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
   severity                = local.alarms.success_server_latency_metric_alert.severity
@@ -69,7 +103,7 @@ module "success_server_latency_metric_alert" {
   window_size             = local.alarms.success_server_latency_metric_alert.window_size
 
   depends_on = [
-    azurerm_storage_account.main
+    module.azure_storage_account
   ]
 
   md_metadata  = var.md_metadata

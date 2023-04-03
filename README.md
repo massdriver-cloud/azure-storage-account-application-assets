@@ -56,6 +56,8 @@ Form input parameters for configuring a bundle for deployment.
 <!-- PARAMS:START -->
 ## Properties
 
+- **`account`** *(object)*
+  - **`region`** *(string)*: The region where the storage account will be created. **Cannot be changed after deployment**.
 - **`monitoring`** *(object)*
   - **`mode`** *(string)*: Enable and customize Function App metric alarms. Default: `AUTOMATED`.
     - **One of**
@@ -63,37 +65,16 @@ Form input parameters for configuring a bundle for deployment.
       - Custom
       - Disabled
 - **`redundancy`** *(object)*
-  - **`data_protection`** *(boolean)*: Default: `False`.
-  - **`replication_type`** *(string)*: The type of replication to use for the storage account. **West US and North Central US do not support zone-redundant storage**.
+  - **`data_protection`** *(integer)*: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365). Minimum: `1`. Maximum: `365`. Default: `7`.
+  - **`replication_type`** *(string)*
     - **One of**
       - Local-redundant storage
       - Geo-redundant storage
       - Geo-redundant storage (read-access)
       - Zone-redundant storage
-      - Geo-zone-redundant Storage
+      - Geo-zone-redundant storage
       - Geo-zone-redundant storage (read-access)
-## Examples
-
-  ```json
-  {
-      "__name": "Development",
-      "redundancy": {
-          "data_protection": true,
-          "data_protection_days": 7
-      }
-  }
-  ```
-
-  ```json
-  {
-      "__name": "Production",
-      "redundancy": {
-          "data_protection": true,
-          "data_protection_days": 365
-      }
-  }
-  ```
-
+  - **`zone_redundancy`** *(boolean)*: Enable zone redundancy for the storage account. **Cannot be changed after deployment**. Default: `False`.
 <!-- PARAMS:END -->
 
 </details>
@@ -133,37 +114,6 @@ Connections from other bundles that this bundle depends on.
       ```
 
   - **`specs`** *(object)*
-- **`azure_virtual_network`** *(object)*: . Cannot contain additional properties.
-  - **`data`** *(object)*
-    - **`infrastructure`** *(object)*
-      - **`cidr`** *(string)*
-
-        Examples:
-        ```json
-        "10.100.0.0/16"
-        ```
-
-        ```json
-        "192.24.12.0/22"
-        ```
-
-      - **`default_subnet_id`** *(string)*: Azure Resource ID.
-
-        Examples:
-        ```json
-        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-        ```
-
-      - **`id`** *(string)*: Azure Resource ID.
-
-        Examples:
-        ```json
-        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-        ```
-
-  - **`specs`** *(object)*
-    - **`azure`** *(object)*: .
-      - **`region`** *(string)*: Select the Azure region you'd like to provision your resources in.
 <!-- CONNECTIONS:END -->
 
 </details>
@@ -178,14 +128,14 @@ Resources created by this bundle that can be connected to other bundles.
 <!-- ARTIFACTS:START -->
 ## Properties
 
-- **`azure_storage_account`** *(object)*: . Cannot contain additional properties.
+- **`azure_storage_account_blob`** *(object)*: . Cannot contain additional properties.
   - **`data`** *(object)*
-    - **`authentication`** *(object)*
-      - **`connection_string`** *(string)*: Azure Storage Account Connection String authentication.
+    - **`infrastructure`** *(object)*
+      - **`ari`** *(string)*: Azure Resource ID.
 
         Examples:
         ```json
-        "DefaultEndpointsProtocol=https;AccountName=localdevstorage0000;AccountKey=1234abcd=;EndpointSuffix=core.windows.net"
+        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
         ```
 
       - **`endpoint`** *(string)*: Azure Storage Account endpoint authentication. Cannot contain additional properties.
@@ -207,17 +157,9 @@ Resources created by this bundle that can be connected to other bundles.
         "https://storageaccount.privatelink01.queue.core.windows.net/"
         ```
 
-    - **`infrastructure`** *(object)*
-      - **`ari`** *(string)*: Azure Resource ID.
-
-        Examples:
-        ```json
-        "/subscriptions/12345678-1234-1234-abcd-1234567890ab/resourceGroups/resource-group-name/providers/Microsoft.Network/virtualNetworks/network-name"
-        ```
-
     - **`security`** *(object)*: Azure Security Configuration. Cannot contain additional properties.
       - **`iam`** *(object)*: IAM Roles And Scopes. Cannot contain additional properties.
-        - **`^[a-z/-]+$`** *(object)*
+        - **`^[a-z]+[a-z_]*[a-z]$`** *(object)*
           - **`role`**: Azure Role.
 
             Examples:

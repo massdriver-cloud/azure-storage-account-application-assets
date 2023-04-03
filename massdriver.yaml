@@ -2,8 +2,8 @@ schema: draft-07
 name: "azure-storage-account-application-assets"
 description: "Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally."
 source_url: github.com/massdriver-cloud/azure-storage-account-application-assets
-access: "private"
-type: "infrastructure"
+access: public
+type: infrastructure
 
 MonitorAlarmMetric: &monitor_alarm_metric
   required:
@@ -104,33 +104,45 @@ MonitorAlarmMetric: &monitor_alarm_metric
       minimum: 0
 
 params:
-  examples:
-    - __name: Development
-      redundancy:
-        data_protection: true
-        data_protection_days: 7
-    - __name: Production
-      redundancy:
-        data_protection: true
-        data_protection_days: 365
   required:
     - redundancy
     - monitoring
   properties:
+    account:
+      title: Storage Account settings
+      type: object
+      required:
+        - region
+      properties:
+        region:
+          title: Region
+          description: The region where the storage account will be created. **Cannot be changed after deployment**.
+          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+          $md.immutable: true
     redundancy:
       title: Data Redundancy
       type: object
       required:
-        - replication_type
+        - zone_redundancy
         - data_protection
       properties:
-        replication_type:
-          title: Replication type
-          description: "The type of replication to use for the storage account. Zone-redundancy is not supported in every region. This cannot be changed after deployment."
-          type: string
-           # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS. Users cannot swap between non-zone-redundant and zone-redundant replication types.
-           # However, it's far easier to build and read as a single list. IMO optimizing for the case of changing replication_type is not worth it here.
+        zone_redundancy:
+          title: Enable zone redundancy
+          description: Enable zone redundancy for the storage account. **Cannot be changed after deployment**.
+          type: boolean
+          default: false
+          # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS.
+          # Users cannot swap between non-zone-redundant and zone-redundant replication types.
           $md.immutable: true
+        data_protection:
+          title: Data protection settings
+          description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
+          type: integer
+          default: 7
+          minimum: 1
+          maximum: 365
+        replication_type:
+          type: string
           oneOf:
             - title: Local-redundant storage
               const: LRS
@@ -140,31 +152,45 @@ params:
               const: RAGRS
             - title: Zone-redundant storage
               const: ZRS
-            - title: Geo-zone-redundant Storage
+            - title: Geo-zone-redundant storage
               const: GZRS
             - title: Geo-zone-redundant storage (read-access)
               const: RAGZRS
-        data_protection:
-          title: Enable data protection
-          default: false
-          type: boolean
       dependencies:
-        data_protection:
+        zone_redundancy:
           oneOf:
             - properties:
-                data_protection:
-                  const: true
-                data_protection_days:
-                  title: Data protection settings
-                  description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
-                  type: integer
-                  minimum: 1
-                  maximum: 365
-              required:
-                - data_protection_days
-            - properties:
-                data_protection:
+                zone_redundancy:
                   const: false
+                replication_type:
+                  title: Replication type
+                  description: The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage).
+                  type: string
+                  oneOf:
+                    - title: Local-redundant storage
+                      const: LRS
+                    - title: Geo-redundant storage
+                      const: GRS
+                    - title: Geo-redundant storage (read-access)
+                      const: RAGRS
+              required:
+                - replication_type
+            - properties:
+                zone_redundancy:
+                  const: true
+                replication_type:
+                  title: Replication type
+                  description: "The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage). **Some regions do not support zone-redundant storage**."
+                  type: string
+                  oneOf:
+                    - title: Zone-redundant storage
+                      const: ZRS
+                    - title: Geo-zone-redundant Storage
+                      const: GZRS
+                    - title: Geo-zone-redundant storage (read-access)
+                      const: RAGZRS
+              required:
+                - replication_type
     monitoring:
       type: object
       title: Monitoring
@@ -197,6 +223,10 @@ params:
                   type: object
                   title: Alarms
                   properties:
+                    availability_metric_alert:
+                      title: Availability
+                      type: object
+                      <<: *monitor_alarm_metric
                     success_e2e_latency_metric_alert:
                       title: End-to-end latency
                       type: object
@@ -209,25 +239,30 @@ params:
 connections:
   required:
     - azure_service_principal
-    - azure_virtual_network
   properties:
     azure_service_principal:
       $ref: massdriver/azure-service-principal
-    azure_virtual_network:
-      $ref: massdriver/azure-virtual-network
 
 artifacts:
   required:
-    - azure_storage_account
+    - azure_storage_account_blob
   properties:
-    azure_storage_account:
-      $ref: massdriver/azure-storage-account
+    azure_storage_account_blob:
+      $ref: massdriver/azure-storage-account-blob
 
 ui:
   ui:order:
+    - account
     - redundancy
     - monitoring
     - "*"
+  account:
+    ui:order:
+      - region
+      - "*"
+    region:
+      ui:field: supportedCloudLocationsDropdown
+      cloudService: azure
   redundancy:
     ui:order:
       - zone_redundancy
@@ -245,7 +280,7 @@ ui:
         - success_e2e_latency_metric_alert
         - success_server_latency_metric_alert
         - '*'
-      success_e2e_latency_metric_alert: &monitor_alarm_metric_ui
+      availability_metric_alert: &monitor_alarm_metric_ui
         ui:order:
           - severity
           - operator
@@ -254,5 +289,7 @@ ui:
           - window_size
           - threshold
           - '*'
+      success_e2e_latency_metric_alert:
+        <<: *monitor_alarm_metric_ui
       success_server_latency_metric_alert:
         <<: *monitor_alarm_metric_ui
