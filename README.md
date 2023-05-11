@@ -130,6 +130,8 @@ Resources created by this bundle that can be connected to other bundles.
 
 - **`azure_storage_account_blob`** *(object)*: . Cannot contain additional properties.
   - **`data`** *(object)*
+    - **`authentication`** *(object)*
+      - **`sas_token`** *(string)*
     - **`infrastructure`** *(object)*
       - **`ari`** *(string)*: Azure Resource ID.
 
