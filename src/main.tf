@@ -5,7 +5,7 @@ resource "azurerm_resource_group" "main" {
 }
 
 module "azure_storage_account" {
-  source              = "github.com/massdriver-cloud/terraform-modules//azure/storage-account?ref=0e573c3"
+  source              = "github.com/massdriver-cloud/terraform-modules//azure/storage-account?ref=87cc8c2"
   name                = var.md_metadata.name_prefix
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
