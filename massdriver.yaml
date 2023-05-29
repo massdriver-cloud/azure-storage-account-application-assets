@@ -235,6 +235,57 @@ params:
                       title: Server latency
                       type: object
                       <<: *monitor_alarm_metric
+    cors_rules:
+      type: array
+      title: CORS Rules
+      description: Configure Cross-Origin Resource Sharing (CORS) rules for the storage account.
+      items:
+        type: object
+        required:
+          - allowed_origins
+          - allowed_methods
+          - allowed_headers
+          - exposed_headers
+          - max_age_in_seconds
+        properties:
+          allowed_origins:
+            title: Allowed origins
+            description: The origin domains that are permitted to make a request against the storage account via CORS.
+            type: array
+            items:
+              type: string
+          allowed_methods:
+            title: Allowed methods
+            description: The HTTP methods that are permitted to be executed by the allowed origins.
+            type: array
+            items:
+              type: string
+              oneOf:
+                - const: DELETE
+                - const: GET
+                - const: HEAD
+                - const: MERGE
+                - const: OPTIONS
+                - const: POST
+                - const: PUT
+          allowed_headers:
+            title: Allowed headers
+            description: The request headers that are permitted to be specified by the allowed origins.
+            type: array
+            items:
+              type: string
+          exposed_headers:
+            title: Exposed headers
+            description: The response headers that are permitted to be sent in the response to the CORS request.
+            type: array
+            items:
+              type: string
+          max_age_in_seconds:
+            title: Max age in seconds
+            description: The maximum amount time that a browser should cache the preflight OPTIONS request.
+            type: integer
+            minimum: 0
+            maximum: 86400
 
 connections:
   required:

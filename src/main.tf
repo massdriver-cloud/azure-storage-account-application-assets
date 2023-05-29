@@ -18,5 +18,16 @@ module "azure_storage_account" {
   blob_properties = {
     delete_retention_policy           = var.redundancy.data_protection
     container_delete_retention_policy = var.redundancy.data_protection
+
+    dynamic "cors_rule" {
+      for_each = var.cors_rules
+      content {
+        allowed_headers = cors_rule.value.allowed_headers
+        allowed_methods = cors_rule.value.allowed_methods
+        allowed_origins = cors_rule.value.allowed_origins
+        exposed_headers = cors_rule.value.exposed_headers
+        max_age_in_seconds = cors_rule.value.max_age_in_seconds
+      }
+    }
   }
 }
