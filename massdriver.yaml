@@ -1,9 +1,13 @@
 schema: draft-07
-name: "azure-storage-account-application-assets"
-description: "Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally."
+name: azure-storage-account-application-assets
+description: Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally.
 source_url: github.com/massdriver-cloud/azure-storage-account-application-assets
 access: public
 type: infrastructure
+
+steps:
+  - path: src
+    provisioner: terraform
 
 MonitorAlarmMetric: &monitor_alarm_metric
   required:
@@ -180,7 +184,7 @@ params:
                   const: true
                 replication_type:
                   title: Replication type
-                  description: "The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage). **Some regions do not support zone-redundant storage**."
+                  description: The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage). **Some regions do not support zone-redundant storage**.
                   type: string
                   oneOf:
                     - title: Zone-redundant storage
@@ -255,11 +259,11 @@ ui:
     - account
     - redundancy
     - monitoring
-    - "*"
+    - '*'
   account:
     ui:order:
       - region
-      - "*"
+      - '*'
     region:
       ui:field: supportedCloudLocationsDropdown
       cloudService: azure
@@ -268,8 +272,7 @@ ui:
       - zone_redundancy
       - replication_type
       - data_protection
-      - data_protection_days
-      - "*"
+      - '*'
   monitoring:
     ui:order:
       - mode

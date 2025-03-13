@@ -43,7 +43,7 @@ module "alarm_channel" {
 module "availability_metric_alert" {
   count                   = local.monitoring_enabled
   source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
-  scopes                  = [module.azure_storage_account.account_id]
+  scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
   severity                = local.alarms.availability_metric_alert.severity
@@ -51,7 +51,7 @@ module "availability_metric_alert" {
   window_size             = local.alarms.availability_metric_alert.window_size
 
   depends_on = [
-    module.azure_storage_account
+    azurerm_storage_account.main
   ]
 
   md_metadata  = var.md_metadata
@@ -69,7 +69,7 @@ module "availability_metric_alert" {
 module "success_e2e_latency_metric_alert" {
   count                   = local.monitoring_enabled
   source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
-  scopes                  = [module.azure_storage_account.account_id]
+  scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
   severity                = local.alarms.success_e2e_latency_metric_alert.severity
@@ -77,7 +77,7 @@ module "success_e2e_latency_metric_alert" {
   window_size             = local.alarms.success_e2e_latency_metric_alert.window_size
 
   depends_on = [
-    module.azure_storage_account
+    azurerm_storage_account.main
   ]
 
   md_metadata  = var.md_metadata
@@ -95,7 +95,7 @@ module "success_e2e_latency_metric_alert" {
 module "success_server_latency_metric_alert" {
   count                   = local.monitoring_enabled
   source                  = "github.com/massdriver-cloud/terraform-modules//azure/monitor-metrics-alarm?ref=b4b3190"
-  scopes                  = [module.azure_storage_account.account_id]
+  scopes                  = [azurerm_storage_account.main.id]
   resource_group_name     = azurerm_resource_group.main.name
   monitor_action_group_id = module.alarm_channel.id
   severity                = local.alarms.success_server_latency_metric_alert.severity
@@ -103,7 +103,7 @@ module "success_server_latency_metric_alert" {
   window_size             = local.alarms.success_server_latency_metric_alert.window_size
 
   depends_on = [
-    module.azure_storage_account
+    azurerm_storage_account.main
   ]
 
   md_metadata  = var.md_metadata
