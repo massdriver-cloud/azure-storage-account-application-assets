@@ -1,139 +1,135 @@
 schema: draft-07
-name: "azure-storage-account-application-assets"
-description: "Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally."
-source_url: github.com/massdriver-cloud/azure-storage-account-application-assets
-access: public
-type: infrastructure
-
-MonitorAlarmMetric: &monitor_alarm_metric
-  required:
-    - severity
-    - frequency
-    - window_size
-    - aggregation
-    - operator
-    - threshold
-  properties:
+name: azure-storage-account-application-assets
+version: 1.0.0
+description: Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally.
+source_url: https://github.com/massdriver-cloud/azure-storage-account-application-assets
+type: application
+MonitorAlarmMetric:
+  required: &1
+  - severity
+  - frequency
+  - window_size
+  - aggregation
+  - operator
+  - threshold
+  properties: &2
     severity:
       title: Severity
       description: The severity of the alarm.
       type: integer
       default: 1
       oneOf:
-        - title: Critical
-          const: 0
-        - title: Error
-          const: 1
-        - title: Warning
-          const: 2
-        - title: Information
-          const: 3
-        - title: Verbose
-          const: 4
+      - title: Critical
+        const: 0
+      - title: Error
+        const: 1
+      - title: Warning
+        const: 2
+      - title: Information
+        const: 3
+      - title: Verbose
+        const: 4
     frequency:
       title: Frequency
       description: The evaluation frequency of the alarms.
       type: string
       default: PT1M
       oneOf:
-        - title: Every 1 minute
-          const: PT1M
-        - title: Every 5 minutes
-          const: PT5M
-        - title: Every 15 minutes
-          const: PT15M
-        - title: Every 30 minutes
-          const: PT30M
-        - title: Every 1 hour
-          const: PT1H
+      - title: Every 1 minute
+        const: PT1M
+      - title: Every 5 minutes
+        const: PT5M
+      - title: Every 15 minutes
+        const: PT15M
+      - title: Every 30 minutes
+        const: PT30M
+      - title: Every 1 hour
+        const: PT1H
     window_size:
       title: Alarm window
       description: The time range over which the alarm is evaluated.
       type: string
       default: PT5M
       oneOf:
-        - title: Every 1 minute
-          const: PT1M
-        - title: Every 5 minutes
-          const: PT5M
-        - title: Every 15 minutes
-          const: PT15M
-        - title: Every 30 minutes
-          const: PT30M
-        - title: Every 1 hour
-          const: PT1H
-        - title: Every 6 hours
-          const: PT6H
-        - title: Every 12 hours
-          const: PT12H
-        - title: Every 24 hours
-          const: P1D
+      - title: Every 1 minute
+        const: PT1M
+      - title: Every 5 minutes
+        const: PT5M
+      - title: Every 15 minutes
+        const: PT15M
+      - title: Every 30 minutes
+        const: PT30M
+      - title: Every 1 hour
+        const: PT1H
+      - title: Every 6 hours
+        const: PT6H
+      - title: Every 12 hours
+        const: PT12H
+      - title: Every 24 hours
+        const: P1D
     aggregation:
       title: Aggregation
       description: The aggregation type of the alarm.
       type: string
       default: Average
       enum:
-        - Average
-        - Count
-        - Minimum
-        - Maximum
-        - Total
+      - Average
+      - Count
+      - Minimum
+      - Maximum
+      - Total
     operator:
       title: Operator
       description: The operator used to compare the metric value to the threshold.
       type: string
       default: GreaterThanOrEqual
       oneOf:
-        - title: Greater than or equal to
-          const: GreaterThanOrEqual
-        - title: Greater than
-          const: GreaterThan
-        - title: Less than or equal to
-          const: LessThanOrEqual
-        - title: Less than
-          const: LessThan
-        - title: Equals
-          const: Equals
-        - title: Not equal to
-          const: NotEquals
+      - title: Greater than or equal to
+        const: GreaterThanOrEqual
+      - title: Greater than
+        const: GreaterThan
+      - title: Less than or equal to
+        const: LessThanOrEqual
+      - title: Less than
+        const: LessThan
+      - title: Equals
+        const: Equals
+      - title: Not equal to
+        const: NotEquals
     threshold:
       title: Threshold
       description: The availability metric is the percentage of availability of the storage account. The latency metrics are thresholds for latency in milliseconds.
       type: integer
       minimum: 0
-
 params:
   required:
-    - redundancy
-    - monitoring
+  - redundancy
+  - monitoring
   properties:
     account:
       title: Storage Account settings
       type: object
       required:
-        - region
+      - region
       properties:
         region:
           title: Region
           description: The region where the storage account will be created. **Cannot be changed after deployment**.
-          $ref: https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
-          $md.immutable: true
+          "$ref": https://raw.githubusercontent.com/massdriver-cloud/artifact-definitions/main/definitions/types/azure-region.json
+          "$md.immutable": true
     redundancy:
       title: Data Redundancy
       type: object
       required:
-        - zone_redundancy
-        - data_protection
+      - zone_redundancy
+      - data_protection
       properties:
         zone_redundancy:
           title: Enable zone redundancy
           description: Enable zone redundancy for the storage account. **Cannot be changed after deployment**.
           type: boolean
           default: false
-          # This is immutable because users can freely swap between LRS, GRS, and RAGRS, or ZRS, GZRS, and RAGZRS.
-          # Users cannot swap between non-zone-redundant and zone-redundant replication types.
-          $md.immutable: true
+          "$md.immutable": true
         data_protection:
           title: Data protection settings
           description: Set the number of days to allow data recovery if data is deleted (minimum 1, maximum 365).
@@ -144,53 +140,53 @@ params:
         replication_type:
           type: string
           oneOf:
-            - title: Local-redundant storage
-              const: LRS
-            - title: Geo-redundant storage
-              const: GRS
-            - title: Geo-redundant storage (read-access)
-              const: RAGRS
-            - title: Zone-redundant storage
-              const: ZRS
-            - title: Geo-zone-redundant storage
-              const: GZRS
-            - title: Geo-zone-redundant storage (read-access)
-              const: RAGZRS
+          - title: Local-redundant storage
+            const: LRS
+          - title: Geo-redundant storage
+            const: GRS
+          - title: Geo-redundant storage (read-access)
+            const: RAGRS
+          - title: Zone-redundant storage
+            const: ZRS
+          - title: Geo-zone-redundant storage
+            const: GZRS
+          - title: Geo-zone-redundant storage (read-access)
+            const: RAGZRS
       dependencies:
         zone_redundancy:
           oneOf:
-            - properties:
-                zone_redundancy:
-                  const: false
-                replication_type:
-                  title: Replication type
-                  description: The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage).
-                  type: string
-                  oneOf:
-                    - title: Local-redundant storage
-                      const: LRS
-                    - title: Geo-redundant storage
-                      const: GRS
-                    - title: Geo-redundant storage (read-access)
-                      const: RAGRS
-              required:
-                - replication_type
-            - properties:
-                zone_redundancy:
-                  const: true
-                replication_type:
-                  title: Replication type
-                  description: "The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage). **Some regions do not support zone-redundant storage**."
-                  type: string
-                  oneOf:
-                    - title: Zone-redundant storage
-                      const: ZRS
-                    - title: Geo-zone-redundant Storage
-                      const: GZRS
-                    - title: Geo-zone-redundant storage (read-access)
-                      const: RAGZRS
-              required:
-                - replication_type
+          - properties:
+              zone_redundancy:
+                const: false
+              replication_type:
+                title: Replication type
+                description: The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#locally-redundant-storage).
+                type: string
+                oneOf:
+                - title: Local-redundant storage
+                  const: LRS
+                - title: Geo-redundant storage
+                  const: GRS
+                - title: Geo-redundant storage (read-access)
+                  const: RAGRS
+            required:
+            - replication_type
+          - properties:
+              zone_redundancy:
+                const: true
+              replication_type:
+                title: Replication type
+                description: The type of replication to use for the storage account. [Learn more](https://learn.microsoft.com/en-us/azure/storage/common/storage-redundancy#zone-redundant-storage). **Some regions do not support zone-redundant storage**.
+                type: string
+                oneOf:
+                - title: Zone-redundant storage
+                  const: ZRS
+                - title: Geo-zone-redundant Storage
+                  const: GZRS
+                - title: Geo-zone-redundant storage (read-access)
+                  const: RAGZRS
+            required:
+            - replication_type
     monitoring:
       type: object
       title: Monitoring
@@ -201,95 +197,101 @@ params:
           type: string
           default: AUTOMATED
           oneOf:
-            - const: AUTOMATED
-              title: Automated
-            - const: CUSTOM
-              title: Custom
-            - const: DISABLED
-              title: Disabled
+          - const: AUTOMATED
+            title: Automated
+          - const: CUSTOM
+            title: Custom
+          - const: DISABLED
+            title: Disabled
       dependencies:
         mode:
           oneOf:
-            - properties:
-                mode:
-                  const: AUTOMATED
-            - properties:
-                mode:
-                  const: DISABLED
-            - properties:
-                mode:
-                  const: CUSTOM
-                alarms:
-                  type: object
-                  title: Alarms
-                  properties:
-                    availability_metric_alert:
-                      title: Availability
-                      type: object
-                      <<: *monitor_alarm_metric
-                    success_e2e_latency_metric_alert:
-                      title: End-to-end latency
-                      type: object
-                      <<: *monitor_alarm_metric
-                    success_server_latency_metric_alert:
-                      title: Server latency
-                      type: object
-                      <<: *monitor_alarm_metric
-
+          - properties:
+              mode:
+                const: AUTOMATED
+          - properties:
+              mode:
+                const: DISABLED
+          - properties:
+              mode:
+                const: CUSTOM
+              alarms:
+                type: object
+                title: Alarms
+                properties:
+                  availability_metric_alert:
+                    title: Availability
+                    type: object
+                    required: *1
+                    properties: *2
+                  success_e2e_latency_metric_alert:
+                    title: End-to-end latency
+                    type: object
+                    required: *1
+                    properties: *2
+                  success_server_latency_metric_alert:
+                    title: Server latency
+                    type: object
+                    required: *1
+                    properties: *2
 connections:
   required:
-    - azure_service_principal
+  - azure_service_principal
   properties:
     azure_service_principal:
-      $ref: massdriver/azure-service-principal
-
+      "$ref": massdriver/azure-service-principal
 artifacts:
   required:
-    - azure_storage_account_blob
+  - azure_storage_account_blob
   properties:
     azure_storage_account_blob:
-      $ref: massdriver/azure-storage-account-blob
-
+      "$ref": massdriver/azure-storage-account-blob
 ui:
   ui:order:
-    - account
-    - redundancy
-    - monitoring
-    - "*"
+  - account
+  - redundancy
+  - monitoring
+  - "*"
   account:
     ui:order:
-      - region
-      - "*"
+    - region
+    - "*"
     region:
       ui:field: supportedCloudLocationsDropdown
       cloudService: azure
   redundancy:
     ui:order:
-      - zone_redundancy
-      - replication_type
-      - data_protection
-      - data_protection_days
-      - "*"
+    - zone_redundancy
+    - replication_type
+    - data_protection
+    - data_protection_days
+    - "*"
   monitoring:
     ui:order:
-      - mode
-      - alarms
-      - '*'
+    - mode
+    - alarms
+    - "*"
     alarms:
       ui:order:
-        - success_e2e_latency_metric_alert
-        - success_server_latency_metric_alert
-        - '*'
-      availability_metric_alert: &monitor_alarm_metric_ui
-        ui:order:
-          - severity
-          - operator
-          - aggregation
-          - frequency
-          - window_size
-          - threshold
-          - '*'
+      - success_e2e_latency_metric_alert
+      - success_server_latency_metric_alert
+      - "*"
+      availability_metric_alert:
+        ui:order: &3
+        - severity
+        - operator
+        - aggregation
+        - frequency
+        - window_size
+        - threshold
+        - "*"
       success_e2e_latency_metric_alert:
-        <<: *monitor_alarm_metric_ui
+        ui:order: *3
       success_server_latency_metric_alert:
-        <<: *monitor_alarm_metric_ui
+        ui:order: *3
+steps:
+- path: src
+  provisioner: opentofu
+  config:
+    checkov:
+      enable: true
