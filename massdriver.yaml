@@ -3,7 +3,6 @@ name: azure-storage-account-application-assets
 version: 1.0.0
 description: Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally.
 source_url: https://github.com/massdriver-cloud/azure-storage-account-application-assets
-type: application
 MonitorAlarmMetric:
   required: &1
   - severity
