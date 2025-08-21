@@ -1,7 +1,6 @@
 resource "massdriver_artifact" "azure_storage_account_blob" {
-  field                = "azure_storage_account_blob"
-  provider_resource_id = module.azure_storage_account.account_id
-  name                 = "Azure Blob Storage Account ${var.md_metadata.name_prefix} (${module.azure_storage_account.account_id})"
+  field    = "azure_storage_account_blob"
+  name     = "Azure Blob Storage Account ${var.md_metadata.name_prefix} (${module.azure_storage_account.account_id})"
   artifact = jsonencode(
     {
       data = {
