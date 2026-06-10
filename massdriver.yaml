@@ -3,6 +3,14 @@ name: azure-storage-account-application-assets
 version: 1.0.0
 description: Azure Blob storage is optimized for storing unstructured data. This storage solution is ideal for storing any files produced and consumed by your application internally.
 source_url: https://github.com/massdriver-cloud/azure-storage-account-application-assets
+
+steps:
+- path: src
+  provisioner: opentofu
+  config:
+    checkov:
+      enable: true
+
 MonitorAlarmMetric:
   required: &1
   - severity
@@ -100,6 +108,7 @@ MonitorAlarmMetric:
       description: The availability metric is the percentage of availability of the storage account. The latency metrics are thresholds for latency in milliseconds.
       type: integer
       minimum: 0
+
 params:
   required:
   - redundancy
@@ -233,18 +242,21 @@ params:
                     type: object
                     required: *1
                     properties: *2
+
 connections:
   required:
-  - azure_service_principal
+  - azure_authentication
   properties:
-    azure_service_principal:
-      "$ref": massdriver/azure-service-principal
+    azure_authentication:
+      "$ref": azure-service-principal
+
 artifacts:
   required:
   - azure_storage_account_blob
   properties:
     azure_storage_account_blob:
-      "$ref": massdriver/azure-storage-account-blob
+      "$ref": azure-storage-account-blob
+
 ui:
   ui:order:
   - account
@@ -288,9 +300,3 @@ ui:
         ui:order: *3
       success_server_latency_metric_alert:
         ui:order: *3
-steps:
-- path: src
-  provisioner: opentofu
-  config:
-    checkov:
-      enable: true
